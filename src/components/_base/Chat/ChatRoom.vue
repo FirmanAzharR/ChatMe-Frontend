@@ -1,0 +1,218 @@
+<template>
+  <div>
+    <div class="chat-room-fill" v-if="getResultChat.length > 0">
+      <div class="header-name">
+        <div class="box-msg">
+          <img src="../../../assets/img/img-msg2.jpg" alt="" />
+          <div class="main-msg">
+            <h5 class="text1">{{ getResultChat[0].user_fullname }}</h5>
+            <div class="status">Online</div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="main-chat"
+        v-for="(item, index) in getResultChat"
+        :key="index"
+      >
+        <div class="left-chat" v-if="setUser.user_id === item.id_sender">
+          <img class="img" src="../../../assets/img/img-msg2.jpg" alt="" />
+          <b-card class="card-left">
+            {{ item.message }}
+          </b-card>
+        </div>
+        <div class="right-chat" v-else>
+          <b-card class="card-right">
+            {{ item.message }}
+          </b-card>
+          <img class="img-right" src="../../../assets/img/img-msg.png" alt="" />
+        </div>
+      </div>
+      <div class="forms">
+        <div class="input-group">
+          <b-form-input
+            type="text"
+            autocomplete="off"
+            style="border-radius:20px;margin-left:20px;margin-right:10px;height:40px"
+            placeholder="Write a messaage ..."
+            v-model="message"
+            @keyup.enter="
+              sendMessage(
+                setUser.user_id,
+                getResultChat[0].user2,
+                getResultChat[0].key_room
+              )
+            "
+          ></b-form-input>
+          <div
+            style="font-size: 35px;cursor:pointer"
+            @click="
+              sendMessage(
+                setUser.user_id,
+                getResultChat[0].user2,
+                getResultChat[0].key_room
+              )
+            "
+          >
+            <b-icon
+              icon="cursor-fill"
+              class="rounded-circle p-2"
+              style="background-color:#7D97DD;margin-right:20px;"
+              variant="light"
+            ></b-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-room-empty" v-else>
+      <p>Please select a chat to start messaging</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex'
+export default {
+  name: 'ChatRoom',
+  data() {
+    return {
+      checkChat: 0,
+      message: '',
+      form: {}
+    }
+  },
+  created() {},
+  computed: {
+    ...mapGetters(['getResultChat', 'setUser'])
+  },
+  methods: {
+    ...mapActions(['sendChat', 'getChat']),
+    sendMessage(myId, friendId, key) {
+      this.form = {
+        my_id: myId,
+        friend_id: friendId,
+        key_room: key,
+        message: this.message
+      }
+      this.sendChat(this.form)
+        .then(result => {
+          const data = {
+            key_room: key,
+            user_id: myId
+          }
+          this.getChat(data)
+          console.log(result)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* .main-chat {
+  width: 110px;
+  height: 110px;
+  overflow: auto;
+} */
+.forms {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+}
+.input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.left-chat {
+  padding-top: 20px;
+  padding-left: 40px;
+  display: flex;
+}
+.right-chat {
+  padding-top: 20px;
+  padding-right: 30px;
+  display: flex;
+  float: right;
+}
+.img {
+  width: 54px;
+  height: 54px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-right: 10px;
+  align-self: flex-end;
+}
+.img-right {
+  width: 54px;
+  height: 54px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-right: 10px;
+  align-self: flex-start;
+}
+.card.card-left {
+  border-radius: 35px 35px 35px 10px;
+  max-width: 400px;
+  background-color: #7e98df;
+  color: white;
+  border: none;
+}
+.card.card-right {
+  border-radius: 35px 10px 35px 35px;
+  max-width: 400px;
+  margin-right: 10px;
+  border: 1px solid #7e98df;
+  border: none;
+}
+.status {
+  color: #7e98df;
+}
+.header-name {
+  background-color: white;
+  padding-left: 40px;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+.box-msg {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.box-msg img {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+.text1 {
+  width: 250px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.chat-room-empty {
+  padding-top: 20px;
+  background-color: #fafafa;
+  width: auto;
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.chat-room-fill {
+  background-color: #fafafa;
+  width: auto;
+  height: 700px;
+  position: relative;
+}
+
+.chat-room p {
+  color: #848484;
+  font-size: 24px;
+}
+</style>
