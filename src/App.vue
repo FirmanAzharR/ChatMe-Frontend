@@ -7,11 +7,12 @@
 <style>
 html,
 body {
-  width: 100%;
-  height: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
 }
-body {
-  background-color: #f6f6f6;
+#app {
+  background-color: #f2f2f2;
   width: 100%;
   height: 100%;
   background-attachment: fixed;

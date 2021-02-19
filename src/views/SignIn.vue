@@ -1,36 +1,50 @@
 <template>
   <div class="signin">
-    <div class="rubik" v-if="type === 'login'">
-      <Login :typeForm="type" @sendType="formChange" />
+    <div class="rubik" v-if="getPage === 'login'">
+      <Login />
     </div>
-    <div class="rubik" v-if="type === 'register'">
-      <Register :typeForm="type" @sendType="formChange" />
+    <div class="rubik" v-if="getPage === 'register'">
+      <Register />
     </div>
-    <div class="rubik" v-if="type === 'forgot'">
+    <div class="rubik" v-if="getPage === 'forgot'">
       <Forgot />
+    </div>
+    <div class="rubik" v-if="getPage === 'reset'">
+      <Reset />
     </div>
   </div>
 </template>
 <script>
-import Login from '../components/_base/Login'
-import Register from '../components/_base/Register'
-import Forgot from '../components/_base/Forgot'
+import Login from '../components/_base/Auth/Login'
+import Register from '../components/_base/Auth/Register'
+import Forgot from '../components/_base/Auth/Forgot'
+import Reset from '../components/_base/Auth/ResetPass'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'SignIn',
-  data() {
-    return {
-      type: 'login'
-    }
-  },
   components: {
     Login,
     Register,
-    Forgot
+    Forgot,
+    Reset
+  },
+  data() {
+    return {}
+  },
+  created() {
+    const page = this.$route.query.page
+    const key = this.$route.query.key
+    if ((key !== 'undefined') & (page === 'reset')) {
+      this.changePage(page)
+    } else {
+      this.changePage('login')
+    }
+  },
+  computed: {
+    ...mapGetters(['getPage'])
   },
   methods: {
-    formChange(type) {
-      this.type = type
-    }
+    ...mapMutations(['changePage'])
   }
 }
 </script>

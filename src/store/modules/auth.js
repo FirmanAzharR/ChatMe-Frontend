@@ -3,6 +3,7 @@ import router from '../../router'
 export default {
   modules: {},
   state: {
+    page: 'login',
     user: {},
     token: localStorage.getItem('token') || null
   },
@@ -14,6 +15,9 @@ export default {
     delUser(state) {
       state.user = {}
       state.token = null
+    },
+    changePage(state, payload) {
+      state.page = payload
     }
   },
   actions: {
@@ -24,6 +28,30 @@ export default {
           .then(result => {
             context.commit('setUser', result.data.data)
             localStorage.setItem('token', result.data.data.token)
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    },
+    updateUser(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`${process.env.VUE_APP_PORT}/user/reset`, payload)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    },
+    forgotPass(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${process.env.VUE_APP_PORT}/user/forgot`, payload)
+          .then(result => {
             resolve(result)
           })
           .catch(error => {
@@ -83,6 +111,9 @@ export default {
     },
     setUser(state) {
       return state.user
+    },
+    getPage(state) {
+      return state.page
     }
   }
 }

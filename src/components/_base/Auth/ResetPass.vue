@@ -1,59 +1,50 @@
 <template>
-  <div class="register">
+  <div class="forgots">
     <b-container style="align-items: stretch;">
       <b-row>
         <b-col md="3"></b-col>
         <b-col md="6">
           <b-card>
             <div class="title">
-              <b-icon
-                icon="chevron-left"
-                class="icons"
-                :value="typeForm"
-                @click="changeForm('login')"
-              ></b-icon>
               <div class="h5">
-                Register
+                Reset Password
               </div>
             </div>
 
             <br />
-            <div class="text">Let’s create your account!</div>
+            <div class="text">Reset your password here !</div>
             <br />
-            <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
-              <div class="label-input">Name</div>
-              <b-form-input
-                class="input"
-                type="text"
-                placeholder="Enter your email address"
-                required
-                autocomplete="off"
-                v-model="form.user_fullname"
-              ></b-form-input
-              ><br />
-              <div class="label-input">Email</div>
-              <b-form-input
-                class="input"
-                type="email"
-                placeholder="Enter your email address"
-                required
-                autocomplete="off"
-                v-model="form.user_email"
-              ></b-form-input>
-              <br />
-              <div class="label-input">Password</div>
+            <b-form @submit.prevent="onSubmit">
+              <div class="label-input">New password</div>
               <b-form-input
                 class="input"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter new password"
                 required
-                v-model="form.user_password"
+                autocomplete="off"
+                v-model="form.password"
               ></b-form-input>
-              <a href="#" class="forgot">Forgot Password?</a><br />
-              <b-button block type="submit">Register</b-button>
-              <div class="text2">Register with</div>
-              <b-button block class="btn2">Google</b-button>
+              <br />
+              <div class="label-input">Confirm password</div>
+              <b-form-input
+                class="input"
+                type="password"
+                placeholder="Confirm password"
+                required
+                autocomplete="off"
+                v-model="confirmPass"
+              ></b-form-input>
+              <br />
+              <b-button block type="submit" v-if="form.password === confirmPass"
+                >Save changes</b-button
+              >
+              <b-button block type="submit" v-else disabled
+                >Save changes</b-button
+              >
             </b-form>
+            <br />
+            <b-button block @click="changePage('login')">Login here</b-button>
+            <br />
           </b-card>
         </b-col>
         <b-col md="3"></b-col>
@@ -63,43 +54,35 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import vueNotif from '../../mixins/vueNotif.js'
+import { mapMutations, mapActions } from 'vuex'
+import vueNotif from '../../../mixins/vueNotif.js'
 export default {
-  name: 'Register',
-  props: ['typeForm'],
+  name: 'Reset',
   mixins: [vueNotif],
   data() {
     return {
+      confirmPass: '',
       form: {
-        user_fullname: '',
-        user_email: '',
-        user_password: ''
+        password: ''
       }
     }
   },
   methods: {
-    ...mapActions(['register']),
-    changeForm(data) {
-      this.$emit('sendType', data)
-    },
-    onRegister() {
-      this.register(this.form)
+    ...mapMutations(['changePage']),
+    ...mapActions(['updateUser']),
+    onSubmit() {
+      const key = this.$route.query.key
+      const data = {
+        key: key,
+        password: this.form.password
+      }
+      this.updateUser(data)
         .then(result => {
-          this.vueToastSuccess(`Register Success`)
-          console.log(result)
-          this.onReset()
+          this.vueToastSuccess(`${result.data.msg}`)
         })
         .catch(error => {
-          this.vueToastFailed(`Register Failed ${error}`)
+          this.vueToastFailed(`${error}`)
         })
-    },
-    onReset() {
-      this.form = {
-        user_fullname: '',
-        user_email: '',
-        user_password: ''
-      }
     }
   }
 }
@@ -128,9 +111,9 @@ export default {
   color: #848484;
   font-size: 14px;
 }
-.register {
-  padding-top: 100px;
-  padding-bottom: 148px;
+.forgots {
+  padding-top: 140px;
+  padding-bottom: 185px;
 }
 .card {
   border: none;
@@ -183,5 +166,17 @@ export default {
   margin-bottom: 30px;
   color: #848484;
   font-size: 14px;
+}
+
+@media only screen and (max-width: 600px) {
+  .card {
+    padding: 0px 10px 20px 10px;
+  }
+  .h5 {
+    font-size: 18px;
+  }
+  .icons {
+    font-size: 20px;
+  }
 }
 </style>

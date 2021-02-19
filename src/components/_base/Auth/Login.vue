@@ -29,20 +29,22 @@
                 autocomplete="off"
                 v-model="form.user_password"
               ></b-form-input>
-              <a href="#" class="forgot">Forgot Password?</a><br />
+              <div class="forgot cursor" @click="changePage('forgot')">
+                Forgot Password?
+              </div>
+              <br />
               <b-button block type="submit">Login</b-button>
               <div class="text2">Login with</div>
               <b-button block class="btn2">Google</b-button>
               <div class="text3">
                 Don't have an account ?
-                <a
-                  :value="typeForm"
-                  @click="changeForm('register')"
-                  id="link"
-                  href="#"
-                  style="color:#7e98df;font-weight:500"
-                  >Sign Up</a
+                <div
+                  @click="changePage('register')"
+                  class="cursor"
+                  style="color:#7e98df;font-weight:500;margin-left:5px"
                 >
+                  Sign Up
+                </div>
               </div>
             </b-form>
           </b-card>
@@ -54,11 +56,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import vueNotif from '../../mixins/vueNotif'
+import { mapActions, mapMutations } from 'vuex'
+import vueNotif from '../../../mixins/vueNotif'
 export default {
   name: 'Login',
-  props: ['typeForm'],
   mixins: [vueNotif],
   data() {
     return {
@@ -70,6 +71,7 @@ export default {
   },
   methods: {
     ...mapActions(['login']),
+    ...mapMutations(['changePage']),
     signIn() {
       this.login(this.form)
         .then(result => {
@@ -156,10 +158,23 @@ h5 {
   font-size: 16px;
 }
 .text3 {
+  display: flex;
+  justify-content: center;
   text-align: center;
   margin-top: 30px;
   margin-bottom: 30px;
   color: #848484;
   font-size: 14px;
+}
+.cursor {
+  cursor: pointer;
+}
+.cursor:hover {
+  text-decoration: underline;
+}
+@media only screen and (max-width: 600px) {
+  .card {
+    padding: 0px 10px 20px 10px;
+  }
 }
 </style>

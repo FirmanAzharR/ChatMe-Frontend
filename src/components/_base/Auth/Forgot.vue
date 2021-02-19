@@ -6,7 +6,11 @@
         <b-col md="6">
           <b-card>
             <div class="title">
-              <b-icon icon="chevron-left" class="icons"></b-icon>
+              <b-icon
+                icon="chevron-left"
+                class="icons"
+                @click="changePage('login')"
+              ></b-icon>
               <div class="h5">
                 Forgot Password
               </div>
@@ -15,7 +19,7 @@
             <br />
             <div class="text">You’ll get messages soon on your e-mail</div>
             <br />
-            <b-form>
+            <b-form @submit.prevent="sendEmail">
               <div class="label-input">Email</div>
               <b-form-input
                 class="input"
@@ -23,7 +27,17 @@
                 placeholder="Enter your email address"
                 required
                 autocomplete="off"
+                v-model="form.user_email"
               ></b-form-input>
+              <br />
+              <div v-if="status === 1">
+                <b-icon
+                  icon="circle-fill"
+                  animation="throb"
+                  font-scale="1"
+                ></b-icon>
+                Sending link reset, please wait ...
+              </div>
               <br />
               <b-button block type="submit">Send</b-button>
             </b-form>
@@ -34,6 +48,38 @@
     </b-container>
   </div>
 </template>
+
+<script>
+import { mapMutations, mapActions } from 'vuex'
+import vueNotif from '../../../mixins/vueNotif.js'
+export default {
+  name: 'Forgot',
+  mixins: [vueNotif],
+  data() {
+    return {
+      status: 0,
+      form: {
+        user_email: ''
+      }
+    }
+  },
+  methods: {
+    ...mapMutations(['changePage']),
+    ...mapActions(['forgotPass']),
+    sendEmail() {
+      this.status = 1
+      this.forgotPass(this.form)
+        .then(result => {
+          this.vueToastSuccess(`${result.data.msg}`)
+          this.status = 0
+        })
+        .catch(error => {
+          this.vueToastFailed(`${error.data.msg}`)
+        })
+    }
+  }
+}
+</script>
 
 <style scoped>
 .icons {
@@ -116,6 +162,9 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .card {
+    padding: 0px 10px 20px 10px;
+  }
   .h5 {
     font-size: 18px;
   }

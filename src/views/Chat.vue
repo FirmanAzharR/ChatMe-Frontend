@@ -21,13 +21,11 @@
 <script>
 import ChatList from '../components/_base/Chat/ChatList'
 import ChatRoom from '../components/_base/Chat/ChatRoom'
-import Profile from '../components/_base/Profile'
 export default {
   name: 'Chat',
   components: {
     ChatList,
-    ChatRoom,
-    Profile
+    ChatRoom
   },
   data() {
     return {
