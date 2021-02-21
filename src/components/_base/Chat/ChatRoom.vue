@@ -3,31 +3,63 @@
     <div class="chat-room-fill" v-if="getResultChat.length > 0">
       <div class="header-name">
         <div class="box-msg">
-          <img src="../../../assets/img/img-msg2.jpg" alt="" />
+          <img
+            :src="
+              getResultChat[0].user_photo !== ''
+                ? `http://localhost:5000/profileImages/` +
+                  getResultChat[0].user_photo
+                : require('../../../assets/img/default.jpg')
+            "
+            alt=""
+          />
           <div class="main-msg">
             <h5 class="text1">{{ getResultChat[0].user_fullname }}</h5>
             <div class="status">Online</div>
           </div>
         </div>
       </div>
-      <div
-        class="main-chat"
-        v-for="(item, index) in getResultChat"
-        :key="index"
-      >
-        <div class="left-chat" v-if="setUser.user_id === item.id_sender">
-          <img class="img" src="../../../assets/img/img-msg2.jpg" alt="" />
-          <b-card class="card-left">
-            {{ item.message }}
-          </b-card>
-        </div>
-        <div class="right-chat" v-else>
-          <b-card class="card-right">
-            {{ item.message }}
-          </b-card>
-          <img class="img-right" src="../../../assets/img/img-msg.png" alt="" />
+      <div class="scrollspy">
+        <div
+          class="main-chat"
+          v-for="(item, index) in getResultChat"
+          :key="index"
+        >
+          <div class="conversation" v-if="setUser.user_id === item.id_sender">
+            <div class="left-chat">
+              <img
+                :src="
+                  item.user_photo !== ''
+                    ? `http://localhost:5000/profileImages/` +
+                      getProfiles[0].user_photo
+                    : require('../../../assets/img/default.jpg')
+                "
+                alt="avatar"
+                class="img"
+              />
+              <b-card class="card-left">
+                {{ item.message }}
+              </b-card>
+            </div>
+          </div>
+          <div v-else class="conversation">
+            <div class="right-chat">
+              <b-card class="card-right">
+                {{ item.message }}
+              </b-card>
+              <img
+                :src="
+                  item.user_photo !== ''
+                    ? `http://localhost:5000/profileImages/` + item.user_photo
+                    : require('../../../assets/img/default.jpg')
+                "
+                alt="avatar"
+                class="img-right"
+              />
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="forms">
         <div class="input-group">
           <b-form-input
@@ -83,7 +115,7 @@ export default {
   },
   created() {},
   computed: {
-    ...mapGetters(['getResultChat', 'setUser'])
+    ...mapGetters(['getResultChat', 'setUser', 'getProfiles'])
   },
   methods: {
     ...mapActions(['sendChat', 'getChat']),
@@ -112,11 +144,15 @@ export default {
 </script>
 
 <style scoped>
-/* .main-chat {
-  width: 110px;
-  height: 110px;
-  overflow: auto;
-} */
+.conversation {
+  padding: 0px;
+  margin: 5px 0;
+}
+.conversation::after {
+  content: '';
+  clear: both;
+  display: table;
+}
 .forms {
   position: absolute;
   bottom: 20px;
@@ -128,12 +164,12 @@ export default {
   align-items: center;
 }
 .left-chat {
-  padding-top: 20px;
+  padding-top: 10px;
   padding-left: 40px;
   display: flex;
 }
 .right-chat {
-  padding-top: 20px;
+  padding-top: 10px;
   padding-right: 30px;
   display: flex;
   float: right;
@@ -207,8 +243,27 @@ export default {
 .chat-room-fill {
   background-color: #fafafa;
   width: auto;
-  height: 700px;
+  height: 680px;
   position: relative;
+}
+.scrollspy {
+  position: relative;
+  height: 480px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+.scrollspy::-webkit-scrollbar {
+  width: 3px; /* width of the entire scrollbar */
+}
+
+.scrollspy::-webkit-scrollbar-track {
+  background: white; /* color of the tracking area */
+}
+
+.scrollspy::-webkit-scrollbar-thumb {
+  background-color: rgba(44, 110, 253, 0.651); /* color of the scroll thumb */
+  border-radius: 50px; /* roundness of the scroll thumb */
+  border: none; /* creates padding around scroll thumb */
 }
 
 .chat-room p {

@@ -12,7 +12,7 @@ const routes = [
     component: SignIn
   },
   {
-    path: '/chat/:id',
+    path: '/chat',
     name: 'Chat',
     component: Chat
   }

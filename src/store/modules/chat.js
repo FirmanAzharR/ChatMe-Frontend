@@ -9,6 +9,9 @@ export default {
   mutations: {
     getChatRoom(state, payload) {
       state.resultChats = payload
+    },
+    setChatList(state, payload) {
+      state.resultChatList = payload
     }
   },
   actions: {
@@ -17,7 +20,7 @@ export default {
         axios
           .get(`${process.env.VUE_APP_PORT}/chat/${payload}`)
           .then(result => {
-            context.commit('getList', result.data.data)
+            context.commit('setChatList', result.data.data)
             resolve(result)
           })
           .catch(error => {

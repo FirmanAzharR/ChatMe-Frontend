@@ -1,105 +1,7 @@
 <template>
   <div class="chat-list">
-    {{ getChatLists }}
-    <b-modal scrollable ref="my-modal" hide-footer title="Friend List">
-      <b-card v-if="modalType === 'listfriend'">
-        <div
-          class="box-msg"
-          v-for="(item, index) in getListFriend"
-          :key="index"
-        >
-          <img src="../../../assets/img/img-msg2.jpg" alt="" />
-          <div class="main-msg">
-            <h5 class="text1">{{ item.user_fullname }}</h5>
-            <div class="text2">
-              Online
-            </div>
-          </div>
-          <div class="date-time">
-            <b-icon icon="chat-dots-fill" class="icons-msg"></b-icon>
-          </div>
-        </div>
-      </b-card>
-      <b-card v-if="modalType === 'addfriend'">
-        <b-form-input
-          class="search-input"
-          type="text"
-          placeholder="Search friend by email . . ."
-          v-model="form.user_email"
-          @keyup.enter="search"
-        ></b-form-input>
-        <hr />
-        <div
-          class="box-msg"
-          v-for="(item, index) in getSearchFriend"
-          :key="index"
-        >
-          <img src="../../../assets/img/default.jpg" alt="" />
-          <div class="main-msg">
-            <h5 class="text1">{{ item.user_displayname }}</h5>
-            <div class="text2">
-              Online
-            </div>
-          </div>
-          <div class="date-time">
-            <b-icon
-              icon="plus"
-              class="icons-msg"
-              v-if="getSearchFriend[0].user_email !== setUser.user_email"
-              @click="addFriends(item.user_email)"
-            ></b-icon>
-          </div>
-        </div>
-      </b-card>
-      <b-card v-if="modalType === 'reqFriend'">
-        <div v-for="(item, index) in getReqFriends" :key="index">
-          <div class="box-msg">
-            <img src="../../../assets/img/img-msg2.jpg" alt="" />
-            <div class="main-msg">
-              <h5 class="text1">{{ item.user_fullname }}</h5>
-              <div class="text2">
-                Online
-              </div>
-            </div>
-            <div class="date-time">
-              <b-icon
-                icon="check"
-                class="icons-msg"
-                @click="accReqFriend(item.id_user2)"
-              ></b-icon>
-            </div>
-          </div>
-        </div>
-      </b-card>
-      <b-button class="mt-2" variant="danger" block @click="hideModal"
-        >Close</b-button
-      >
-    </b-modal>
     <b-card>
-      <div class="app-name">
-        <h3>Telegram</h3>
-        <!-- <b-icon icon="list" class="icons"></b-icon> -->
-        <b-dropdown
-          id="dropdown-left"
-          text="Menu"
-          variant="primary"
-          class="m-2"
-        >
-          <b-dropdown-item href="#">@{{ setUser.user_email }}</b-dropdown-item>
-          <b-dropdown-item href="#">Setting</b-dropdown-item>
-          <b-dropdown-item @click="showModal('listfriend')"
-            >Contact</b-dropdown-item
-          >
-          <b-dropdown-item @click="showModal('addfriend')"
-            >Invite Friend</b-dropdown-item
-          >
-          <b-dropdown-item @click="showModal('reqFriend')"
-            >Friend Request</b-dropdown-item
-          >
-          <b-dropdown-item href="#">Create Group</b-dropdown-item>
-          <b-dropdown-item @click="logout">Logout</b-dropdown-item>
-        </b-dropdown>
-      </div>
+      <Menu />
       <div class="search-msg">
         <b-form-input
           type="text"
@@ -117,7 +19,15 @@
       <div class="list-msg" v-for="(item, index) in getChatLists" :key="index">
         <!-- box message -->
         <div class="box-msg" @click="getChats(item.key_room)">
-          <img src="../../../assets/img/img-msg2.jpg" alt="" />
+          <img
+            :src="
+              item.user_photo !== ''
+                ? `http://localhost:5000/profileImages/` + item.user_photo
+                : require('../../../assets/img/default.jpg')
+            "
+            alt="avatar"
+            class="image-profile"
+          />
           <div class="main-msg">
             <h5 class="text1">{{ item.user_fullname }}</h5>
             <div class="text2">
@@ -139,108 +49,36 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import vueNotif from '../../../mixins/vueNotif'
+import Menu from '../Menu/menu'
 export default {
   name: 'ChatList',
   mixins: [vueNotif],
+  components: {
+    Menu
+  },
   data() {
-    return {
-      navClick: 1,
-      modalType: 'listfriend',
-      form: {
-        user_email: ''
-      }
-    }
+    return {}
   },
   created() {
-    const id = this.setUser.user_id
-    this.getReqFriend(id)
-    this.getList(id)
-    this.getChatList(id)
+    this.getChatList(this.setUser.user_id)
+      .then(result => {
+        console.log(result)
+      })
+      .catch(error => console.log(error))
   },
   computed: {
-    ...mapGetters([
-      'getSearchFriend',
-      'setUser',
-      'getReqFriends',
-      'getListFriend',
-      'getChatLists',
-      'getResultChat'
-    ])
+    ...mapGetters(['setUser', 'getChatLists', 'getResultChat'])
   },
   methods: {
-    ...mapMutations(['searchFriend']),
-    ...mapActions([
-      'friendSearch',
-      'addFriend',
-      'getReqFriend',
-      'accFriend',
-      'getList',
-      'getChatList',
-      'getChat',
-      'logout'
-    ]),
+    ...mapActions(['getChatList', 'getChat']),
     getChats(key) {
       const data = {
         key_room: key,
         user_id: this.setUser.user_id
       }
       this.getChat(data)
-    },
-    accReqFriend(friend_id) {
-      //alert(friend_id)
-      delete this.form.user_email
-      this.form = {
-        user1: this.setUser.user_id,
-        user2: friend_id
-      }
-      this.accFriend(this.form)
-        .then(result => {
-          this.vueToastSuccess(`${result.data.msg}`)
-          this.getReqFriend(this.setUser.user_id)
-          this.getList(this.setUser.user_id)
-        })
-        .catch(error => {
-          console.log(error)
-          this.vueToastFailed('Failed acc friend')
-        })
-    },
-    addFriends(email) {
-      this.form = {
-        user_email: email,
-        user_id: this.setUser.user_id
-      }
-      this.addFriend(this.form)
-        .then(result => {
-          this.vueToastSuccess(`${result.data.msg}`)
-          this.hideModal()
-        })
-        .catch(error => {
-          console.log(error)
-          this.vueToastFailed('Failed add friend')
-        })
-    },
-    search() {
-      this.friendSearch(this.form)
-        .then(result => {
-          console.log(result)
-        })
-        .catch(error => {
-          this.vueToastFailed('Friend not found')
-          console.log(error)
-        })
-    },
-    showModal(type) {
-      this.modalType = type
-      this.$refs['my-modal'].show()
-    },
-    hideModal() {
-      this.$refs['my-modal'].hide()
-      this.searchFriend('')
-      this.form = {
-        user_email: ''
-      }
     }
   }
 }

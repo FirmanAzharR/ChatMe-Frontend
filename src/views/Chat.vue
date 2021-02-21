@@ -3,12 +3,7 @@
     <b-container fluid>
       <b-row>
         <b-col md="4" lg="4" class="p-0">
-          <div v-if="page === 'chatlist'">
-            <ChatList />
-          </div>
-          <div v-else-if="page === 'profile'">
-            <Profile />
-          </div>
+          <ChatList />
         </b-col>
         <b-col md="8" lang="8" class="p-0">
           <ChatRoom />
@@ -28,9 +23,7 @@ export default {
     ChatRoom
   },
   data() {
-    return {
-      page: 'chatlist'
-    }
+    return {}
   },
   created() {},
   methods: {}

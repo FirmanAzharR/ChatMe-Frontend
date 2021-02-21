@@ -63,6 +63,7 @@ export default {
   mixins: [vueNotif],
   data() {
     return {
+      res: '',
       form: {
         user_email: '',
         user_password: ''
@@ -70,23 +71,20 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(['login', 'getProfile']),
     ...mapMutations(['changePage']),
     signIn() {
       this.login(this.form)
         .then(result => {
+          this.getProfile(result.data.data.user_id)
           this.vueToastSuccess('Login Success')
           setTimeout(() => {
-            this.$router.push(`/chat/${result.data.data.user_id}`)
+            this.$router.push(`/chat`)
           }, 2000)
         })
         .catch(error => {
           this.vueToastFailed(error.data.msg)
         })
-    },
-    changeForm(data) {
-      const changeForm = data
-      this.$emit('sendType', changeForm)
     }
   }
 }

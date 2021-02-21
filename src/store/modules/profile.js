@@ -3,11 +3,15 @@ export default {
   modules: {},
   state: {
     resultProfile: '',
-    pageType: 'chatlist'
+    pageType: 'chatlist',
+    resultProfileFriend: ''
   },
   mutations: {
     getProfile(state, payload) {
       state.resultProfile = payload
+    },
+    setProfileFriend(state, payload) {
+      state.resultProfileFriend = payload
     },
     changePage(state, payload) {
       state.pageType = payload
@@ -19,7 +23,7 @@ export default {
         axios
           .patch(
             `${process.env.VUE_APP_PORT}/profile/update-profile/maps/location/${payload.user_id}`,
-            payload
+            payload.data
           )
           .then(response => {
             resolve(response)
@@ -90,11 +94,27 @@ export default {
             reject(error.response)
           })
       })
+    },
+    getProfileFriend(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${process.env.VUE_APP_PORT}/profile/${payload}`)
+          .then(result => {
+            context.commit('setProfileFriend', result.data.data)
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
     }
   },
   getters: {
     getProfiles(state) {
       return state.resultProfile
+    },
+    getProfilesFriend(state) {
+      return state.resultProfileFriend
     }
   }
 }

@@ -8,7 +8,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import * as VueGoogleMaps from 'vue2-google-maps'
 import VueGeolocation from 'vue-browser-geolocation'
 import Toast from 'vue-toastification'
-
+import { SidebarPlugin } from 'bootstrap-vue'
+Vue.use(SidebarPlugin)
 import 'vue-toastification/dist/index.css'
 
 const options = {
