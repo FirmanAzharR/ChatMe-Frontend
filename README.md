@@ -2,9 +2,9 @@
   <p align="center">
     <a href="https://chatsme.netlify.app/">View Demo</a>
     ·
-    <a href="https://github.com/FirmanAzharR/telegramAppBackend/issues">Report Bug</a>
+    <a href="https://github.com/FirmanAzharR/ChatMe-Backend/issues">Report Bug</a>
     ·
-    <a href="https://github.com/FirmanAzharR/telegramAppFrontend/pulls">Request Feature</a>
+    <a href="https://github.com/FirmanAzharR/ChatMe-Frontend/pulls">Request Feature</a>
   </p>
 
 ![Image](cover.png)
