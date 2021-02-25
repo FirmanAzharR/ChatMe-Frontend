@@ -4,11 +4,19 @@ export default {
   modules: {},
   state: {
     resultChatList: '',
-    resultChats: ''
+    resultChats: '',
+    rooms: ''
   },
   mutations: {
     getChatRoom(state, payload) {
       state.resultChats = payload
+    },
+    pushMessage(state, payload) {
+      state.resultChats.push(payload)
+      console.log(state.resultChats)
+    },
+    setRooms(state, payload) {
+      state.rooms = payload
     },
     setChatList(state, payload) {
       state.resultChatList = payload
@@ -44,6 +52,34 @@ export default {
           })
       })
     },
+    getRoom(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(
+            `${process.env.VUE_APP_PORT}/chat/${payload.key_room}/${payload.user_id}`
+          )
+          .then(result => {
+            context.commit('setRooms', result.data.data)
+            console.log(result)
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    },
+    createRoom(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${process.env.VUE_APP_PORT}/chat/create/room`, payload)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     sendChat(context, payload) {
       return new Promise((resolve, reject) => {
         axios
@@ -65,6 +101,9 @@ export default {
   getters: {
     getChatLists(state) {
       return state.resultChatList
+    },
+    getRooms(state) {
+      return state.rooms
     },
     getResultChat(state) {
       return state.resultChats

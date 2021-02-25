@@ -18,7 +18,7 @@
       </div>
       <div class="list-msg" v-for="(item, index) in getChatLists" :key="index">
         <!-- box message -->
-        <div class="box-msg" @click="getChats(item.key_room)">
+        <div class="box-msg" @click="getChats(item.key_room, item.user2)">
           <img
             :src="
               item.user_photo !== ''
@@ -49,9 +49,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import vueNotif from '../../../mixins/vueNotif'
 import Menu from '../Menu/menu'
+import io from 'socket.io-client'
 export default {
   name: 'ChatList',
   mixins: [vueNotif],
@@ -59,26 +60,55 @@ export default {
     Menu
   },
   data() {
-    return {}
+    return {
+      socket: io('http://localhost:5000'),
+      results: ''
+    }
   },
   created() {
     this.getChatList(this.setUser.user_id)
       .then(result => {
-        console.log(result)
+        this.results = result
       })
-      .catch(error => console.log(error))
+      .catch(error => (this.results = error))
+
+    this.socket.on('chatMsg', data => {
+      this.pushMessage(data)
+    })
   },
   computed: {
     ...mapGetters(['setUser', 'getChatLists', 'getResultChat'])
   },
   methods: {
-    ...mapActions(['getChatList', 'getChat']),
-    getChats(key) {
+    ...mapActions(['getChatList', 'getChat', 'getRoom']),
+    ...mapMutations(['pushMessage']),
+    selectRoom(data) {
+      this.socket.emit('joinRoom', {
+        key_room: data
+      })
+    },
+    getChats(key, idFriends) {
       const data = {
         key_room: key,
         user_id: this.setUser.user_id
       }
-      this.getChat(data)
+      const data2 = {
+        key_room: key,
+        user_id: idFriends
+      }
+      //selectRoom for socket i.o
+      this.selectRoom(key)
+
+      //getRoom data from database
+      this.getRoom(data2)
+        .then(result => {
+          this.results = result
+          this.getChat(data)
+        })
+        .catch(error => {
+          this.results = error
+          this.vueToastFailed('Failed open chats')
+        })
     }
   }
 }
@@ -135,6 +165,7 @@ export default {
 .card {
   border-radius: 0px;
   border: none;
+  height: 665px;
 }
 .card .card-body {
   padding-top: 30px;

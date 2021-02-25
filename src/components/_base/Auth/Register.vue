@@ -69,6 +69,7 @@ export default {
   mixins: [vueNotif],
   data() {
     return {
+      res: '',
       form: {
         user_fullname: '',
         user_email: '',
@@ -83,7 +84,7 @@ export default {
       this.register(this.form)
         .then(result => {
           this.vueToastSuccess(`Register Success`)
-          console.log(result)
+          this.res = result
           this.onReset()
         })
         .catch(error => {

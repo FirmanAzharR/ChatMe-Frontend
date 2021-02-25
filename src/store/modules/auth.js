@@ -59,12 +59,22 @@ export default {
           })
       })
     },
-    logout(context) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('cart')
-      localStorage.removeItem('vuex')
-      context.commit('delUser')
-      router.push('/')
+    logout(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`${process.env.VUE_APP_PORT}/user/logout`, payload)
+          .then(result => {
+            localStorage.removeItem('token')
+            localStorage.removeItem('cart')
+            localStorage.removeItem('vuex')
+            context.commit('delUser')
+            router.push('/')
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
     },
     interceptorRequest(context) {
       //console.log('interceptor request works!')

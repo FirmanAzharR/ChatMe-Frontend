@@ -1,23 +1,22 @@
 <template>
   <div>
-    <div class="chat-room-fill" v-if="getResultChat.length > 0">
-      <div class="header-name">
-        <div class="box-msg">
-          <img
-            :src="
-              getResultChat[0].user_photo !== ''
-                ? `http://localhost:5000/profileImages/` +
-                  getResultChat[0].user_photo
-                : require('../../../assets/img/default.jpg')
-            "
-            alt=""
-          />
-          <div class="main-msg">
-            <h5 class="text1">{{ getResultChat[0].user_fullname }}</h5>
-            <div class="status">Online</div>
-          </div>
+    <div class="header-name">
+      <div class="box-msg">
+        <img
+          :src="
+            getRooms[0].user_photo !== ''
+              ? `http://localhost:5000/profileImages/` + getRooms[0].user_photo
+              : require('../../../assets/img/default.jpg')
+          "
+          alt=""
+        />
+        <div class="main-msg">
+          <h5 class="text1">{{ getRooms[0].user_fullname }}</h5>
+          <div class="status">{{ getRooms[0].user_status }}</div>
         </div>
       </div>
+    </div>
+    <div class="chat-room-fill" v-if="getResultChat.length > 0">
       <div class="scrollspy">
         <div
           class="main-chat"
@@ -28,7 +27,7 @@
             <div class="left-chat">
               <img
                 :src="
-                  item.user_photo !== ''
+                  getProfiles[0].user_photo !== ''
                     ? `http://localhost:5000/profileImages/` +
                       getProfiles[0].user_photo
                     : require('../../../assets/img/default.jpg')
@@ -48,8 +47,9 @@
               </b-card>
               <img
                 :src="
-                  item.user_photo !== ''
-                    ? `http://localhost:5000/profileImages/` + item.user_photo
+                  getRooms[0].user_photo !== ''
+                    ? `http://localhost:5000/profileImages/` +
+                      getRooms[0].user_photo
                     : require('../../../assets/img/default.jpg')
                 "
                 alt="avatar"
@@ -97,25 +97,65 @@
       </div>
     </div>
     <div class="chat-room-empty" v-else>
-      <p>Please select a chat to start messaging</p>
+      <div class="forms">
+        <div class="input-group">
+          <b-form-input
+            type="text"
+            autocomplete="off"
+            style="border-radius:20px;margin-left:20px;margin-right:10px;height:40px"
+            placeholder="Write a messaage ..."
+            v-model="message"
+            @keyup.enter="
+              sendMessage(
+                setUser.user_id,
+                getRooms[0].user2,
+                getRooms[0].key_room
+              )
+            "
+          ></b-form-input>
+          <div
+            style="font-size: 35px;cursor:pointer"
+            @click="
+              sendMessage(
+                setUser.user_id,
+                getRooms[0].user2,
+                getRooms[0].key_room
+              )
+            "
+          >
+            <b-icon
+              icon="cursor-fill"
+              class="rounded-circle p-2"
+              style="background-color:#7D97DD;margin-right:20px;"
+              variant="light"
+            ></b-icon>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import io from 'socket.io-client'
 import { mapGetters, mapActions } from 'vuex'
+import vueNotif from '../../../mixins/vueNotif.js'
 export default {
   name: 'ChatRoom',
+  mixins: [vueNotif],
   data() {
     return {
+      results: '',
+      socket: io('http://localhost:5000'),
       checkChat: 0,
       message: '',
+      messages: [],
       form: {}
     }
   },
   created() {},
   computed: {
-    ...mapGetters(['getResultChat', 'setUser', 'getProfiles'])
+    ...mapGetters(['getResultChat', 'setUser', 'getProfiles', 'getRooms'])
   },
   methods: {
     ...mapActions(['sendChat', 'getChat']),
@@ -126,17 +166,20 @@ export default {
         key_room: key,
         message: this.message
       }
+      const data = {
+        id_sender: myId,
+        key_room: key,
+        message: this.message
+      }
+      this.socket.emit('roomMsg', data)
       this.sendChat(this.form)
         .then(result => {
-          const data = {
-            key_room: key,
-            user_id: myId
-          }
-          this.getChat(data)
-          console.log(result)
+          this.message = ''
+          this.results = result
         })
         .catch(error => {
-          console.log(error)
+          this.vueToastFailed('Failed send message')
+          this.results = error
         })
     }
   }
@@ -235,7 +278,7 @@ export default {
   padding-top: 20px;
   background-color: #fafafa;
   width: auto;
-  height: 700px;
+  height: 550px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -243,7 +286,7 @@ export default {
 .chat-room-fill {
   background-color: #fafafa;
   width: auto;
-  height: 680px;
+  height: 550px;
   position: relative;
 }
 .scrollspy {

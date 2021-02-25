@@ -10,7 +10,7 @@ export default {
     vueToastSuccess(msg) {
       this.$toast.success(`${msg}`, {
         position: 'top-right',
-        timeout: 2000,
+        timeout: 1000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,
@@ -26,7 +26,7 @@ export default {
     vueToastFailed(msg) {
       this.$toast.error(`${msg}`, {
         position: 'top-right',
-        timeout: 4000,
+        timeout: 2000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
         pauseOnHover: true,

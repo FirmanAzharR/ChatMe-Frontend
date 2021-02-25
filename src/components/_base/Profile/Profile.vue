@@ -16,6 +16,15 @@
     </div>
     <div class="d-flex justify-content-center" style="margin-bottom:30px">
       <b-iconstack
+        v-if="getProfiles[0].user_photo !== ''"
+        font-scale="1.2"
+        @click="deleteImg"
+        class="btn-icons"
+      >
+        <b-icon stacked icon="circle-fill" variant="danger"></b-icon>
+        <b-icon stacked icon="trash-fill" scale="0.5" variant="white"></b-icon>
+      </b-iconstack>
+      <b-iconstack
         font-scale="1.2"
         @click.prevent="chooseFiles()"
         class="btn-icons"
@@ -62,12 +71,69 @@
     <br />
     <hr />
     <h4 class="labels">
+      Setting<b-icon
+        style="margin-left:10px"
+        icon="gear"
+        font-scale="0.8px"
+      ></b-icon>
+    </h4>
+    <div style="cursor:pointer" @click="showModalPass">
+      <b-icon icon="key" class="icon" style="margin-right:10px;"></b-icon>Change
+      Password
+    </div>
+    <hr />
+    <h4 class="labels">
       Location<b-icon
         style="margin-left:10px"
         icon="map-fill"
         font-scale="0.8px"
       ></b-icon>
     </h4>
+    <!-- Change password  modal-->
+    <b-modal
+      size="sm"
+      ref="my-modal-password"
+      hide-footer
+      title="Change passowrd"
+    >
+      <b-form @submit.prevent="changePass">
+        <div class="label-input">Old password</div>
+        <b-form-input
+          class="input"
+          type="password"
+          placeholder="Enter your old password"
+          v-model="form.old_password"
+          autocomplete="off"
+          required
+        ></b-form-input>
+        <div class="label-input">New password</div>
+        <b-form-input
+          class="input"
+          type="password"
+          placeholder="Enter your new password"
+          v-model="form.new_password"
+          autocomplete="off"
+          required
+        ></b-form-input>
+        <div class="label-input">Confirm password</div>
+        <b-form-input
+          class="input"
+          type="password"
+          placeholder="Confirmation new password"
+          v-model="form.confirm_password"
+          autocomplete="off"
+          required
+        ></b-form-input>
+        <b-button
+          size="sm"
+          block
+          type="submit"
+          variant="primary"
+          v-if="form.new_password === form.confirm_password"
+          >Save Password</b-button
+        >
+      </b-form>
+    </b-modal>
     <div class="d-flex justify-content-center">
       <GmapMap
         :center="coordinate"
@@ -100,6 +166,12 @@ export default {
       coordinate: {
         lat: 10,
         lng: 10
+      },
+      form: {
+        old_password: '',
+        new_password: '',
+        confirm_password: '',
+        user_id: ''
       }
     }
   },
@@ -121,17 +193,55 @@ export default {
     ...mapGetters(['getProfiles', 'setUser'])
   },
   methods: {
-    ...mapActions(['updateProfile', 'getProfile', 'updateLocation']),
+    ...mapActions([
+      'updateProfile',
+      'getProfile',
+      'updateLocation',
+      'changePassword',
+      'deleteProfileImg'
+    ]),
+    deleteImg() {
+      const data = {
+        id: this.setUser.user_id
+      }
+      this.deleteProfileImg(data)
+        .then(result => {
+          this.getProfiles[0].user_photo = ''
+          this.url = null
+          this.res = result
+        })
+        .catch(error => {
+          this.getProfiles[0].user_photo = ''
+          this.url = null
+          this.res = error
+        })
+    },
+    showModalPass() {
+      this.$refs['my-modal-password'].show()
+    },
     updateMap() {
       this.updateLocation({
         user_id: this.setUser.user_id,
         data: this.coordinate
       })
         .then(result => {
-          console.log(result)
+          this.vueToastSuccess('Updating location')
+          this.res = result
         })
         .catch(error => {
-          console.log(error)
+          this.vueToastFailed('Update location failed')
+          this.res = error
+        })
+    },
+    changePass() {
+      this.form.user_id = this.setUser.user_id
+      this.changePassword(this.form)
+        .then(result => {
+          this.vueToastSuccess(`${result.data.msg}`)
+          this.$refs['my-modal-password'].hide()
+        })
+        .catch(error => {
+          this.vueToastFailed(`${error}`)
         })
     },
     clickMarker(position) {
@@ -144,7 +254,6 @@ export default {
       document.getElementById('fileUpload').click()
     },
     handleFile(e) {
-      console.log(e.target.files[0])
       if (
         (e.target.files[0].type !== 'image/png') &
         (e.target.files[0].type !== 'image/jpg') &
@@ -173,6 +282,10 @@ export default {
 </script>
 
 <style scoped>
+.btn-icons {
+  margin: 0 10px;
+  cursor: pointer;
+}
 .btn {
   padding: 10px;
   border-radius: 30px;
@@ -218,8 +331,8 @@ export default {
   text-align: center;
 }
 .image-profile {
-  height: 82px;
-  width: 82px;
+  height: 102px;
+  width: 102px;
   border-radius: 30px;
   object-fit: cover;
   margin-top: 60px;

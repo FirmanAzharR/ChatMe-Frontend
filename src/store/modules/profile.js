@@ -4,9 +4,14 @@ export default {
   state: {
     resultProfile: '',
     pageType: 'chatlist',
-    resultProfileFriend: ''
+    resultProfileFriend: '',
+    profileClick: 0
   },
   mutations: {
+    clickProfile(state, payload) {
+      state.profileClick = payload
+      console.log(state.profileClick)
+    },
     getProfile(state, payload) {
       state.resultProfile = payload
     },
@@ -82,6 +87,18 @@ export default {
           })
       })
     },
+    deleteProfileImg(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`${process.env.VUE_APP_PORT}/profile/delete-img`, payload)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            reject(error.response.data.msg)
+          })
+      })
+    },
     getProfile(context, payload) {
       return new Promise((resolve, reject) => {
         axios
@@ -115,6 +132,9 @@ export default {
     },
     getProfilesFriend(state) {
       return state.resultProfileFriend
+    },
+    getClickProfile(state) {
+      return state.profileClick
     }
   }
 }

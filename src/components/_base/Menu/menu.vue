@@ -24,11 +24,15 @@
           >
             <h5 class="text1">{{ item.user_fullname }}</h5>
             <div class="text2">
-              Online
+              {{ item.user_status }}
             </div>
           </div>
           <div class="date-time">
-            <b-icon icon="chat-dots-fill" class="icons-msg"></b-icon>
+            <b-icon
+              icon="chat-dots-fill"
+              class="icons-msg"
+              @click="addRoom(setUser.user_id, item.user_id)"
+            ></b-icon>
           </div>
         </div>
       </b-card>
@@ -46,18 +50,26 @@
           v-for="(item, index) in getSearchFriend"
           :key="index"
         >
-          <img src="../../../assets/img/default.jpg" alt="" />
+          <img
+            :src="
+              item.user_photo !== ''
+                ? `http://localhost:5000/profileImages/` + item.user_photo
+                : require('../../../assets/img/default.jpg')
+            "
+            alt="avatar"
+            class="image-profile"
+          />
           <div class="main-msg">
-            <h5 class="text1">{{ item.user_displayname }}</h5>
+            <h5 class="text1">{{ item.user_fullname }}</h5>
             <div class="text2">
-              Online
+              {{ item.user_status }}
             </div>
           </div>
           <div class="date-time">
             <b-icon
               icon="plus"
               class="icons-msg"
-              v-if="getSearchFriend[0].user_email !== setUser.user_email"
+              v-if="item.user_email !== setUser.user_email"
               @click="addFriends(item.user_email)"
             ></b-icon>
           </div>
@@ -66,11 +78,18 @@
       <b-card v-if="modalType === 'reqFriend'">
         <div v-for="(item, index) in getReqFriends" :key="index">
           <div class="box-msg">
-            <img src="../../../assets/img/img-msg2.jpg" alt="" />
+            <img
+              :src="
+                item.user_photo !== ''
+                  ? `http://localhost:5000/profileImages/` + item.user_photo
+                  : require('../../../assets/img/default.jpg')
+              "
+              alt=""
+            />
             <div class="main-msg">
               <h5 class="text1">{{ item.user_fullname }}</h5>
               <div class="text2">
-                Online
+                {{ item.user_status }}
               </div>
             </div>
             <div class="date-time">
@@ -98,7 +117,7 @@
         width="430px"
       >
         <div class="px-3 py-2">
-          <ProfileFriend />
+          <ProfileFriend v-if="getClickProfile === 1" />
         </div>
       </b-sidebar>
     </div>
@@ -126,7 +145,7 @@
           >Friend Request</b-dropdown-item
         >
         <b-dropdown-item href="#">Create Group</b-dropdown-item>
-        <b-dropdown-item @click="logout">Logout</b-dropdown-item>
+        <b-dropdown-item @click="clickLogout">Logout</b-dropdown-item>
       </b-dropdown>
     </div>
   </div>
@@ -143,6 +162,7 @@ export default {
   mixins: [vueNotif],
   data() {
     return {
+      results: '',
       sideRight: 0,
       navClick: 1,
       modalType: 'listfriend',
@@ -164,11 +184,12 @@ export default {
       'getReqFriends',
       'getListFriend',
       'getChatLists',
-      'getResultChat'
+      'getResultChat',
+      'getClickProfile'
     ])
   },
   methods: {
-    ...mapMutations(['searchFriend']),
+    ...mapMutations(['searchFriend', 'clickProfile']),
     ...mapActions([
       'getProfile',
       'friendSearch',
@@ -179,26 +200,67 @@ export default {
       'getChatList',
       'getChat',
       'logout',
-      'getProfileFriend'
+      'getProfileFriend',
+      'sendChat',
+      'getChat',
+      'createRoom',
+      'getRoom'
     ]),
+    clickLogout() {
+      const data = {
+        user_id: this.setUser.user_id
+      }
+      this.logout(data)
+    },
+    addRoom(myId, friendId) {
+      let random = Math.floor(1000 + Math.random() * 9000)
+      this.form = {
+        my_id: myId,
+        friend_id: friendId,
+        key_room: random
+      }
+      this.createRoom(this.form)
+        .then(result => {
+          this.getChatList(this.setUser.user_id)
+          this.getChats(random, friendId)
+          this.hideModal()
+          this.results = result
+        })
+        .catch(error => {
+          this.vueToastFailed(`Failed ${error.data.msg}`)
+        })
+    },
     ProfileFriend(id) {
-      this.sideRight = 1
+      this.clickProfile(1)
       this.getProfileFriend(id)
         .then(result => {
           this.hideModal()
           this.$root.$emit('bv::toggle::collapse', 'sidebar-right')
-          console.log(result)
+          this.results = result
         })
         .catch(error => {
-          console.log(error)
+          this.results = error
+          this.vueToastFailed('Failed get profile friend')
         })
     },
-    getChats(key) {
+    getChats(key, idFriends) {
       const data = {
         key_room: key,
         user_id: this.setUser.user_id
       }
-      this.getChat(data)
+      const data2 = {
+        key_room: key,
+        user_id: idFriends
+      }
+      this.getRoom(data2)
+        .then(result => {
+          this.results = result
+          this.getChat(data)
+        })
+        .catch(error => {
+          this.results = error
+          this.vueToastFailed('Failed open messaage room')
+        })
     },
     accReqFriend(friend_id) {
       //alert(friend_id)
@@ -214,7 +276,7 @@ export default {
           this.getList(this.setUser.user_id)
         })
         .catch(error => {
-          console.log(error)
+          this.results = error
           this.vueToastFailed('Failed acc friend')
         })
     },
@@ -229,18 +291,18 @@ export default {
           this.hideModal()
         })
         .catch(error => {
-          console.log(error)
+          this.results = error
           this.vueToastFailed('Failed add friend')
         })
     },
     search() {
       this.friendSearch(this.form)
         .then(result => {
-          console.log(result)
+          this.results = result
         })
         .catch(error => {
           this.vueToastFailed('Friend not found')
-          console.log(error)
+          this.results = error
         })
     },
     showModal(type) {
