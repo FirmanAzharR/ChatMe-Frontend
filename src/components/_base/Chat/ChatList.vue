@@ -30,16 +30,24 @@
           />
           <div class="main-msg">
             <h5 class="text1">{{ item.user_fullname }}</h5>
-            <div class="text2">
-              {{ item.message }}
+            <div class="text2" v-if="getResultChat.length == 0">
+              {{ sliceMsg(item.message) }} ...
+            </div>
+            <div class="text2" v-else>
+              {{ sliceMsg(getResultChat[getResultChat.length - 1].message) }}
+              ...
             </div>
           </div>
-          <div class="date-time">
-            <div class="time">15:20</div>
-            <div class="unread">
-              <div class="round">
-                2
-              </div>
+          <div class="date-time" v-if="getResultChat.length == 0">
+            <div class="time">{{ item.times }}</div>
+            <div class="time">{{ item.dates }}</div>
+          </div>
+          <div class="date-time" v-else>
+            <div class="time">
+              {{ getResultChat[getResultChat.length - 1].times }}
+            </div>
+            <div class="time">
+              {{ getResultChat[getResultChat.length - 1].dates }}
             </div>
           </div>
         </div>
@@ -66,6 +74,7 @@ export default {
     }
   },
   created() {
+    this.sendNotif(this.setUser.user_id)
     this.getChatList(this.setUser.user_id)
       .then(result => {
         this.results = result
@@ -75,6 +84,10 @@ export default {
     this.socket.on('chatMsg', data => {
       this.pushMessage(data)
     })
+    this.socket.on('notif', data => {
+      this.vueChatNotif(`${data.from} : ${data.message}`)
+      this.getChatList(this.setUser.user_id)
+    })
   },
   computed: {
     ...mapGetters(['setUser', 'getChatLists', 'getResultChat'])
@@ -82,9 +95,21 @@ export default {
   methods: {
     ...mapActions(['getChatList', 'getChat', 'getRoom']),
     ...mapMutations(['pushMessage']),
+    sliceMsg(msg) {
+      if (msg !== '' && msg !== undefined) {
+        return msg.substr(0, 30)
+      } else {
+        return ''
+      }
+    },
     selectRoom(data) {
       this.socket.emit('joinRoom', {
         key_room: data
+      })
+    },
+    sendNotif(data) {
+      this.socket.emit('friendNotif', {
+        user_id: data
       })
     },
     getChats(key, idFriends) {
@@ -98,7 +123,6 @@ export default {
       }
       //selectRoom for socket i.o
       this.selectRoom(key)
-
       //getRoom data from database
       this.getRoom(data2)
         .then(result => {
@@ -211,7 +235,8 @@ export default {
 }
 .time {
   color: #848484;
-  font-size: 14px;
+  font-size: 12px;
+  text-align: right;
 }
 .round {
   width: 20px;

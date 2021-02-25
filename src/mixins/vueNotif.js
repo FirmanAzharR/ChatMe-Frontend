@@ -7,6 +7,22 @@ export default {
         solid: true
       })
     },
+    vueChatNotif(msg) {
+      this.$toast.info(`${msg}`, {
+        position: 'top-right',
+        timeout: false,
+        closeOnClick: true,
+        pauseOnFocusLoss: false,
+        pauseOnHover: false,
+        draggable: true,
+        draggablePercent: 0.4,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: 'button',
+        icon: true,
+        rtl: false
+      })
+    },
     vueToastSuccess(msg) {
       this.$toast.success(`${msg}`, {
         position: 'top-right',

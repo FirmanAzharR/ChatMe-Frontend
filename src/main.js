@@ -9,9 +9,19 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import VueGeolocation from 'vue-browser-geolocation'
 import Toast from 'vue-toastification'
 import { SidebarPlugin } from 'bootstrap-vue'
-Vue.use(SidebarPlugin)
+import VueTimeago from 'vue-timeago'
 import 'vue-toastification/dist/index.css'
 
+Vue.use(SidebarPlugin)
+
+Vue.use(VueTimeago, {
+  name: 'Timeago',
+  locale: 'en',
+  locales: {
+    'zh-CN': require('date-fns/locale/zh_cn'),
+    ja: require('date-fns/locale/ja')
+  }
+})
 const options = {
   transition: 'Vue-Toastification__fade',
   maxToasts: 20,

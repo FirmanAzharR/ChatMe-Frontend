@@ -37,6 +37,8 @@
               />
               <b-card class="card-left">
                 {{ item.message }}
+                <br />
+                <div class="time-chat">{{ item.times }}</div>
               </b-card>
             </div>
           </div>
@@ -44,6 +46,10 @@
             <div class="right-chat">
               <b-card class="card-right">
                 {{ item.message }}
+                <br />
+                <div class="time-chat" style="color:#848484">
+                  {{ item.times }}
+                </div>
               </b-card>
               <img
                 :src="
@@ -160,6 +166,8 @@ export default {
   methods: {
     ...mapActions(['sendChat', 'getChat']),
     sendMessage(myId, friendId, key) {
+      let today = new Date()
+      let time = today.getHours() + ':' + today.getMinutes()
       this.form = {
         my_id: myId,
         friend_id: friendId,
@@ -169,13 +177,26 @@ export default {
       const data = {
         id_sender: myId,
         key_room: key,
+        times: time,
         message: this.message
       }
+      const dataGetChat = {
+        user_id: myId,
+        key_room: key
+      }
+      const dataNotif = {
+        friend_id: friendId,
+        from: `@${this.getProfiles[0].user_name}`,
+        key_room: key,
+        message: this.message
+      }
+      this.socket.emit('sendMsgNotif', dataNotif)
       this.socket.emit('roomMsg', data)
       this.sendChat(this.form)
         .then(result => {
           this.message = ''
           this.results = result
+          this.getChat(dataGetChat)
         })
         .catch(error => {
           this.vueToastFailed('Failed send message')
@@ -187,6 +208,9 @@ export default {
 </script>
 
 <style scoped>
+.time-chat {
+  font-size: 10px;
+}
 .conversation {
   padding: 0px;
   margin: 5px 0;
