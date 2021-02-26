@@ -22,7 +22,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `http://localhost:5000/profileImages/` + item.user_photo
+                ? `${ENV}/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -69,7 +69,8 @@ export default {
   },
   data() {
     return {
-      socket: io('http://localhost:5000'),
+      ENV: `${process.env.VUE_APP_PORT}`,
+      socket: io(`${process.env.VUE_APP_PORT}`),
       results: ''
     }
   },

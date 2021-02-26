@@ -7,7 +7,7 @@
         v-else
         :src="
           getProfiles[0].user_photo !== ''
-            ? `http://localhost:5000/profileImages/` + getProfiles[0].user_photo
+            ? `${ENV}/profileImages/` + getProfiles[0].user_photo
             : require('../../../assets/img/default.jpg')
         "
         alt="avatar"
@@ -162,6 +162,7 @@ export default {
   data() {
     return {
       res: '',
+      ENV: `${process.env.VUE_APP_PORT}`,
       url: null,
       coordinate: {
         lat: 10,

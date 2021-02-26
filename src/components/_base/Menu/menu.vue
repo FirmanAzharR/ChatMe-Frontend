@@ -11,7 +11,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `http://localhost:5000/profileImages/` + item.user_photo
+                ? `${ENV}/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -53,7 +53,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `http://localhost:5000/profileImages/` + item.user_photo
+                ? `${ENV}/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -81,7 +81,7 @@
             <img
               :src="
                 item.user_photo !== ''
-                  ? `http://localhost:5000/profileImages/` + item.user_photo
+                  ? `${ENV}/profileImages/` + item.user_photo
                   : require('../../../assets/img/default.jpg')
               "
               alt=""
@@ -130,7 +130,7 @@
     </div>
     <!-- end sidebar -->
     <div class="app-name">
-      <h3>Telegram</h3>
+      <h3><b-icon icon="chat-text-fill"></b-icon> ChatMe</h3>
       <b-dropdown id="dropdown-left" text="Menu" variant="primary" class="m-2">
         <b-dropdown-item type="button" v-b-toggle.sidebar-1
           >Setting</b-dropdown-item
@@ -162,6 +162,7 @@ export default {
   mixins: [vueNotif],
   data() {
     return {
+      ENV: `${process.env.VUE_APP_PORT}`,
       results: '',
       sideRight: 0,
       navClick: 1,

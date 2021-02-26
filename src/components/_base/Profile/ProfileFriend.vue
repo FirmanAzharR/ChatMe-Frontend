@@ -5,8 +5,7 @@
       <img
         :src="
           getProfilesFriend[0].user_photo !== ''
-            ? `http://localhost:5000/profileImages/` +
-              getProfilesFriend[0].user_photo
+            ? `${ENV}/profileImages/` + getProfilesFriend[0].user_photo
             : require('../../../assets/img/default.jpg')
         "
         alt="avatar"
@@ -55,6 +54,7 @@ export default {
   name: 'ProfileFriend',
   data() {
     return {
+      ENV: `${process.env.VUE_APP_PORT}`,
       res: '',
       coordinate: {
         lat: 10,

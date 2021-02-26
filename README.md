@@ -21,8 +21,10 @@ ChatMe is a realtime chat application that is used to communicate with text chat
 ## Requirements
 
 1. <a href="https://nodejs.org/en/download/">Node Js</a>
-2. Node_modules `npm install` or `yarn install`
-3. Backend API ChatMe-Back-End [`here`](https://github.com/FirmanAzharR/telegramAppBackend)
+2. <a href="https://www.npmjs.com/package/socket.io-client">Socket i.o</a>
+3. <a href="https://www.npmjs.com/package/vue2-google-maps">GMaps</a>
+4. Node_modules `npm install` or `yarn install`
+5. Backend API ChatMe-Back-End [`here`](https://github.com/FirmanAzharR/telegramAppBackend)
 
 ## Getting Started
 
