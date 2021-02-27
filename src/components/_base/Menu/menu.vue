@@ -11,7 +11,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `${ENV}/profileImages/` + item.user_photo
+                ? `${ENV}/fileUploadsApi2/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -53,7 +53,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `${ENV}/profileImages/` + item.user_photo
+                ? `${ENV}/fileUploadsApi2/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -81,7 +81,7 @@
             <img
               :src="
                 item.user_photo !== ''
-                  ? `${ENV}/profileImages/` + item.user_photo
+                  ? `${ENV}/fileUploadsApi2/profileImages/` + item.user_photo
                   : require('../../../assets/img/default.jpg')
               "
               alt=""

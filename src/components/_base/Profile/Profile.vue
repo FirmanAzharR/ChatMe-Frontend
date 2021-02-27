@@ -7,7 +7,8 @@
         v-else
         :src="
           getProfiles[0].user_photo !== ''
-            ? `${ENV}/profileImages/` + getProfiles[0].user_photo
+            ? `${ENV}/fileUploadsApi2/profileImages/` +
+              getProfiles[0].user_photo
             : require('../../../assets/img/default.jpg')
         "
         alt="avatar"

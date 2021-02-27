@@ -22,7 +22,7 @@
           <img
             :src="
               item.user_photo !== ''
-                ? `${ENV}/profileImages/` + item.user_photo
+                ? `${ENV}/fileUploadsApi2/profileImages/` + item.user_photo
                 : require('../../../assets/img/default.jpg')
             "
             alt="avatar"
@@ -70,7 +70,9 @@ export default {
   data() {
     return {
       ENV: `${process.env.VUE_APP_PORT}`,
-      socket: io(`${process.env.VUE_APP_PORT}`),
+      socket: io.connect(`${process.env.VUE_APP_SOCKET}`, {
+        path: '/api2/socket.io'
+      }),
       results: ''
     }
   },

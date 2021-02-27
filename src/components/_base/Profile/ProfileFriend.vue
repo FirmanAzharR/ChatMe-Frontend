@@ -5,7 +5,8 @@
       <img
         :src="
           getProfilesFriend[0].user_photo !== ''
-            ? `${ENV}/profileImages/` + getProfilesFriend[0].user_photo
+            ? `${ENV}/fileUploadsApi2/profileImages/` +
+              getProfilesFriend[0].user_photo
             : require('../../../assets/img/default.jpg')
         "
         alt="avatar"

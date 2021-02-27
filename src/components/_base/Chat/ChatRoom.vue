@@ -5,7 +5,7 @@
         <img
           :src="
             getRooms[0].user_photo !== ''
-              ? `${ENV}/profileImages/` + getRooms[0].user_photo
+              ? `${ENV}/fileUploadsApi2/profileImages/` + getRooms[0].user_photo
               : require('../../../assets/img/default.jpg')
           "
           alt=""
@@ -28,7 +28,8 @@
               <img
                 :src="
                   getProfiles[0].user_photo !== ''
-                    ? `${ENV}/profileImages/` + getProfiles[0].user_photo
+                    ? `${ENV}/fileUploadsApi2/profileImages/` +
+                      getProfiles[0].user_photo
                     : require('../../../assets/img/default.jpg')
                 "
                 alt="avatar"
@@ -53,7 +54,8 @@
               <img
                 :src="
                   getRooms[0].user_photo !== ''
-                    ? `${ENV}/profileImages/` + getRooms[0].user_photo
+                    ? `${ENV}/fileUploadsApi2/profileImages/` +
+                      getRooms[0].user_photo
                     : require('../../../assets/img/default.jpg')
                 "
                 alt="avatar"
@@ -151,7 +153,9 @@ export default {
     return {
       results: '',
       ENV: `${process.env.VUE_APP_PORT}`,
-      socket: io(`${process.env.VUE_APP_PORT}`),
+      socket: io.connect(`${process.env.VUE_APP_SOCKET}`, {
+        path: '/api2/socket.io'
+      }),
       checkChat: 0,
       message: '',
       messages: [],
