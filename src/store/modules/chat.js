@@ -13,7 +13,6 @@ export default {
     },
     pushMessage(state, payload) {
       state.resultChats.push(payload)
-      console.log(state.resultChats)
     },
     setRooms(state, payload) {
       state.rooms = payload
@@ -44,7 +43,6 @@ export default {
           )
           .then(result => {
             context.commit('getChatRoom', result.data.data)
-            console.log(result)
             resolve(result)
           })
           .catch(error => {
@@ -60,7 +58,6 @@ export default {
           )
           .then(result => {
             context.commit('setRooms', result.data.data)
-            console.log(result)
             resolve(result)
           })
           .catch(error => {
@@ -89,10 +86,8 @@ export default {
           )
           .then(result => {
             resolve(result)
-            console.log(result)
           })
           .catch(error => {
-            console.log(error)
             reject(error.response)
           })
       })

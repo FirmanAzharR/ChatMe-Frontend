@@ -10,7 +10,6 @@ export default {
   mutations: {
     clickProfile(state, payload) {
       state.profileClick = payload
-      console.log(state.profileClick)
     },
     getProfile(state, payload) {
       state.resultProfile = payload
@@ -63,11 +62,9 @@ export default {
             data
           )
           .then(response => {
-            //console.log(response)
             resolve(response)
           })
           .catch(error => {
-            console.log(error.response.data.msg)
             reject(error.response.data.msg)
           })
       })
